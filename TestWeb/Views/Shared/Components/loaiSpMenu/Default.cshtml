@@ -1,0 +1,10 @@
+﻿@model IEnumerable<ChuDe>
+@foreach (var item in Model)
+{
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title"><a asp-controller="Home" asp-action="SanPhamtheoLoai" asp-route-maloai="@item.MaChuDe">@item.TenChuDe</a></h4>
+		</div>
+	</div>
+}

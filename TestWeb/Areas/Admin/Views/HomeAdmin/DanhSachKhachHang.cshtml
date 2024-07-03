@@ -1,0 +1,282 @@
+﻿@using TestWeb.Models;
+@using X.PagedList.Mvc.Core;
+@model IEnumerable<TestWeb.Models.KhachHang>
+
+@{
+    ViewData["Title"] = "DanhSachKhachHang";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<h3>Danh sách khách hàng</h3>
+
+<input type="text" id="searchID" name="searchID" placeholder="Tìm kiếm theo ID" style="width:400px"/>
+<button class="btn btn-primary" onclick="GetKhachHang($('#searchID').val())" style="width:100px">Tìm kiếm</button>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Mã khách hàng
+            </th>
+            <th>
+                Tài khoản
+            </th>
+            <th>
+                Mật khẩu
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Địa chỉ
+            </th>
+            <th>
+               Điẹn thoại
+            </th>
+            <th>
+               giới tính
+            </th>
+            <th>
+                Ngày sinh
+            </th>
+            
+        </tr>
+    </thead>
+
+    <tbody id="displayProducts"> </tbody>
+</table>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    ///////////Hiện danh sách///////////////////////
+    function showDanhSachKhachHang() {
+        var str = '';
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:7086/admin/homeadmin/DanhSachKhachHang/api/KhachHanginFo',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                $.each(data, function (key, val) {
+     
+                    str += '<tr>';
+                    str += '<td>' + val.maKh+'</td>';
+                    str += '<td>' + val.taiKhoan + '</td>';
+                    str += '<td>' + val.matKhau + '</td>';
+                    str += '<td>' + val.email + '</td>';
+                    str += '<td>' + val.diaChi + '</td>';
+                    str += '<td>' + val.dienThoai + '</td>';
+                    str += '<td>' + val.gioiTinh + '</td>';
+                    str += '<td>' + val.ngaySinh + '</td>';
+                    str += '<td><button   class="btn btn-danger mb-1" onclick="xoaKhachHang(' + val.maKh + ')">Delete</button></td>';
+                    str += '<td><button  class="btn btn-primary" onclick="DanhSachKhachHang(' + val.maKh + ')">Edit</button></td>';
+                    str += '</tr>';
+                    
+                });
+                $('#displayProducts').html(str);
+            },
+            error: function (xhr) {
+                alert(xhr.responseText)
+            }
+        });
+    }
+    showDanhSachKhachHang()
+    
+    ////////////////Tìm kiếm theo Id/////////////////////////
+    function GetKhachHang(id) {
+        var str = '';
+        var count = 0;
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:7086/admin/homeadmin/DanhSachKhachHang/api/KhachHanginfo/' + id,
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                if (data.length == 0) { // Nếu không có kết quả nào
+                    str += '<tr><td colspan="7">Không tìm thấy thông tin khách hàng</td></tr>';
+                } else {
+                    $.each(data, function (key, val) {
+                        if (count >= 1) { // Giới hạn số lượng phần tử hiển thị là 10
+                            return false; // Thoát khỏi vòng lặp
+                        }
+                        str += '<tr>';
+                        str += '<td>' + data.maKh + '</td>';
+                        str += '<td>' + data.taiKhoan + '</td>';
+                        str += '<td>' + data.matKhau + '</td>';
+                        str += '<td>' + data.email + '</td>';
+                        str += '<td>' + data.diaChi + '</td>';
+                        str += '<td>' + data.dienThoai + '</td>';
+                        str += '<td>' + data.gioiTinh + '</td>';
+                        str += '<td>' + data.ngaySinh + '</td>';
+                        str += '</tr>';
+                        count++;
+                    });
+                }
+                $('#displayProducts').html(str);
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+    
+    ///////Thêm khách hàng  //////////////////////
+    function themKhachHang() {
+       
+        var taiKhoan = $('#taiKhoan').val();
+        var matKhau = $('#matKhau').val();
+        var email = $('#email').val();
+        var diaChi = $('#diaChi').val();
+        var dienThoai = $('#dienThoai').val();
+        var gioiTinh = $('input[name=gioiTinh]:checked').val();
+        var ngaySinh = $('#ngaySinh').val();
+
+        
+        var khachHang = {
+            taiKhoan: taiKhoan,
+            matKhau: matKhau,
+            email: email,
+            diaChi: diaChi,
+            dienThoai: dienThoai,
+            gioiTinh: gioiTinh,
+            ngaySinh: ngaySinh
+        };
+
+        
+        $.ajax({
+            type: 'POST',
+            url: 'https://localhost:7086/admin/homeadmin/DanhSachKhachHang/api/KhachHanginfo',
+            contentType: 'application/json',
+            data: JSON.stringify(khachHang),
+            success: function (data) {
+                console.log(data);
+                
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+    ////////////Xóa 1 khách hàng ///////////////
+    function xoaKhachHang(id) {
+        $.ajax({
+            type: 'DELETE',
+            url: 'https://localhost:7086/admin/homeadmin/DanhSachKhachHang/api/KhachHanginfo/' + id,
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                // Cập nhật lại danh sách khách hàng nếu cần thiết
+                alert("Đã xóa khách hàng thành công!");
+                showDanhSachKhachHang();
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    /////////Xuất dữ liệu lên bảng nhập ///////////
+    function DanhSachKhachHang(id) {
+        var str = '';
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:7086/admin/homeadmin/DanhSachKhachHang/api/KhachHanginFo/' + id,
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                $.each(data, function (key, val) {
+                    $('#makhS').val(data.maKh);
+                    $('#taiKhoanS').val(data.taiKhoan);
+                    $('#matKhauS').val(data.matKhau);
+                    $('#emailS').val(data.email);
+                    $('#diaChiS').val(data.diaChi);
+                    $('#dienThoaiS').val(data.dienThoai);
+                    $('input[name=gioiTinh][value=' + data.gioiTinh + ']').prop('checked', true);
+                    $('#ngaySinhS').val(data.ngaySinh);
+
+                });
+
+            },
+            error: function (xhr) {
+                alert(xhr.responseText)
+            }
+        });
+    }
+
+    ///////////Sửa khách hàng////////////////////
+    function SuaKhachHang() {
+        var maKh = $('#makhS').val();
+        var taiKhoan = $('#taiKhoanS').val();
+        var matKhau = $('#matKhauS').val();
+        var email = $('#emailS').val();
+        var diaChi = $('#diaChiS').val();
+        var dienThoai = $('#dienThoaiS').val();
+        var gioiTinh = $('input[name=gioiTinh]:checked').val();
+        var ngaySinhStr = $('#ngaySinhS').val();
+        var ngaySinh = new Date(ngaySinhStr);
+
+        var khachHang = {
+            maKh: maKh,
+            taiKhoan: taiKhoan,
+            matKhau: matKhau,
+            email: email,
+            diaChi: diaChi,
+            dienThoai: dienThoai,
+            gioiTinh: gioiTinh,
+            ngaySinh: ngaySinh,
+            donHangs: []
+        };
+
+        $.ajax({
+            type: 'PUT',
+            url: 'https://localhost:7086/admin/homeadmin/DanhSachKhachHang/api/KhachHanginfo/' + maKh,
+            contentType: 'application/json',
+            data: JSON.stringify(khachHang),
+            success: function (data) {
+                console.log('Sửa thông tin khách hàng thành công!');
+            },
+            error: function (xhr) {
+                console.log('Lỗi sửa thông tin khách hàng: ' + xhr.responseText);
+            }
+        });
+    }
+
+
+
+
+</script>
+<h3>Sửa khách hàng</h3>
+<form>
+    
+    <input type="text" id="makhS" value="" placeholder="Mã khách hàng">
+    <input type="text" id="taiKhoanS" placeholder="Tài khoản">
+    <input type="text" id="matKhauS" placeholder="Mật khẩu">
+    <input type="email" id="emailS" placeholder="Email">
+    <input type="text" id="diaChiS" placeholder="Địa chỉ">
+    <input type="tel" id="dienThoaiS" placeholder="Điện thoại">
+    <input type="radio" id="gioiTinhNam" name="gioiTinh" value="Nam">
+    <label for="gioiTinhNam">Nam</label>
+    <input type="radio" id="gioiTinhNu" name="gioiTinh" value="Nữ">
+    <label for="gioiTinhNu">Nữ</label>
+    <input type="date" id="ngaySinhS">
+    <button  class="btn btn-primary" type="button" onclick="SuaKhachHang()">Lưu thông tin</button>
+</form>
+
+<h3>Thêm khách hàng </h3>
+<form>
+    <input type="text" id="taiKhoan" placeholder="Tài khoản">
+    <input type="text" id="matKhau" placeholder="Mật khẩu">
+    <input type="email" id="email" placeholder="Email">
+    <input type="text" id="diaChi" placeholder="Địa chỉ">
+    <input type="tel" id="dienThoai" placeholder="Điện thoại">
+    <input type="radio" id="gioiTinhNam" name="gioiTinh" value="Nam">
+    <label for="gioiTinhNam">Nam</label>
+    <input type="radio" id="gioiTinhNu" name="gioiTinh" value="Nữ">
+    <label for="gioiTinhNu">Nữ</label>
+    <input type="date" id="ngaySinh">
+    <button class="btn btn-primary" type="button" onclick="themKhachHang()">Thêm</button>
+
+</form>
+
+
+
+
+
+

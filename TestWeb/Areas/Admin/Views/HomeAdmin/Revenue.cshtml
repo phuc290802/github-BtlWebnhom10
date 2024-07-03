@@ -1,0 +1,164 @@
+﻿
+@{
+    ViewData["Title"] = "Revenue";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Title</title>
+</head>
+<body>
+    <div class="container">
+        <form>
+            <div class="form-group">
+                <label for="id">Tháng cần tra cứu doanh thu</label>
+                <input type="text" class="form-control" id="hien" placeholder="Gia tri ">
+            </div>
+            <button type="button" class="btn btn-primary" id="saveBtn">Tìm kiếm</button>
+            <!--<button type="button" class="btn btn-primary" onclick="DeleteCustomer()">Xóa khách hàng</button>-->
+        </form>
+        <table id="KhachHang" class="table table-striped table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Tổng doanh thu</th>
+                    <td><label id="taiKhoan"></label></td>
+                </tr>
+            </thead>
+            <tbody id="allKH"></tbody>
+        </table>
+    </div>
+    <div class="container">
+        <form>
+            <div class="form-group">
+                <label for="id">Doanh thu sản phẩm theo năm</label>
+                <input type="text" class="form-control" id="hien1" placeholder="Năm">
+                <input type="text" class="form-control" id="hien2" placeholder="Mã sách ">
+            </div>
+            <button type="button" class="btn btn-primary" id="saveBtn1">Tìm kiếm</button>
+            <!--<button type="button" class="btn btn-primary" onclick="DeleteCustomer()">Xóa khách hàng</button>-->
+        </form>
+        <table id="KhachHang" class="table table-striped table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Tổng doanh thu</th>
+                    <td><label id="donGia"></label></td>
+                </tr>
+            </thead>
+            <tbody id="allKH"></tbody>
+        </table>
+    </div>
+    <div class="container">
+        <form>
+            <div class="form-group">
+                <label for="id"></label>
+                
+            </div>
+            <button type="button" class="btn btn-primary" onclick="showDanhSachNhanVien()">Tra cứu</button>
+            <!--<button type="button" class="btn btn-primary" onclick="DeleteCustomer()">Xóa khách hàng</button>-->
+        </form>
+        <table id="KhachHang" class="table table-striped table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Nhân viên duyệt nhiều đơn nhất </th>   
+                </tr>
+            </thead>
+            <tbody id="displayProducts"> </tbody>
+        </table>
+    </div>
+</body>
+</html>
+
+@*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>*@
+
+
+<script>
+    /////////////////Tổng doanh thu theo tháng /////////////////////
+    
+        $("#saveBtn").click(function () {
+            var month = $("#hien").val();
+            $.ajax({
+                type: 'GET',
+            url: 'https://localhost:7086/api/revenue/GetRevenueByMonth/' + month,
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data); // In ra data trong console của trình duyệt
+                    $.each(data, function (key, val) {
+                    $('#taiKhoan').text(val.donGia);
+                    });
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText)
+                }
+            });
+        });
+
+    /////////////////Tổng doanh thu sản phẩm theo tháng/////////////////////
+
+    $("#saveBtn1").click(function () {
+        var year = $("#hien1").val();
+        var id = $("#hien2").val();
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:7086/api/revenue/' + year + '/' + id,
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                $.each(data, function (key, val) {
+                    $('#donGia').text(val.donGia);
+                });
+            },
+            error: function (xhr) {
+                alert(xhr.responseText)
+            }
+        });
+    });
+   
+    /////////////////Top nhân viên  /////////////////////
+    function showDanhSachNhanVien() {
+        var str = '';
+        var count = 0;
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:7086/api/Revenue/GetNhanVienMaxDonHang',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                if (data.length == 0) { // Nếu không có kết quả nào
+                    str += '<tr><td colspan="7">Không tìm thấy thông tin khách hàng</td></tr>';
+                } else {
+                    $.each(data, function (key, val) {
+                        if (count >= 1) { // Giới hạn số lượng phần tử hiển thị là 10
+                            return false; // Thoát khỏi vòng lặp
+                        }
+                        str += '<thead><tr><th>Mã nhân viên</th><th>UserName</th><th>Tên nhân viên</th><th>Ngày Sinh</th><th>Số điện thoại</th><th>Địa chỉ</th><th>Chức vụ</th><th>Ảnh đại diện</th></tr></thead>';
+                        str += '<tr>';
+                        str += '<td>' + data.maNhanVien + '</td>';
+                        str += '<td>' + data.username + '</td>';
+                        str += '<td>' + data.tenNhanVien + '</td>';
+                        str += '<td>' + data.ngaySinh + '</td>';
+                        str += '<td>' + data.soDienThoai + '</td>';
+                        str += '<td>' + data.diaChi + '</td>';
+                        str += '<td>' + data.chucVu + '</td>';
+                        str += '<td><img style="width:100px;height:100px" src=@Url.Content("../../ProductImages/Images1/accountImg.png") alt="" /></td>';
+                        str += '</tr>';
+                        count++;
+                    });
+                }
+                $('#displayProducts').html(str);
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+   
+</script>
+
+
+

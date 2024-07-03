@@ -1,0 +1,485 @@
+﻿@using TestWeb.Models;
+@using X.PagedList.Mvc.Core;
+@model X.PagedList.IPagedList<Sach>
+
+@{
+    ViewData["Title"] = "DanhSachSanPhamAPI";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<h3>Danh mục sản phẩm</h3>
+
+
+<div class="badges">
+    <div class="row">
+        <div class="col-lg-6">
+
+            <div class="card">
+                <div class="card-header">
+                    <strong>Tìm kiếm Sản Phẩm</strong>
+                    
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary" style="width:200px;background-color:indianred" onclick="showDanhSanPham()">Danh sách sản phẩm</button><br><br>
+                    <input type="text" id="searchID" name="searchID" placeholder="Tìm kiếm theo ID" style="width:200px" />
+                    <button class="btn btn-primary" onclick="GetSanPham($('#searchID').val())" style="width:100px">Tìm kiếm</button><br><br>
+                    <input type="text" id="txtSearch" name="tenSach" placeholder="Nhập tên sản phẩm" style="width:200px" />
+                    <button class="btn btn-primary" onclick="timSachTheoTen($('#txtSearch').val())" style="width:100px">Tìm kiếm</button>
+                </div>
+            </div><!-- /# card -->
+        </div><!--  /.col-lg-6 -->
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Lọc sản phẩm</strong>
+                </div>
+                <div class="card-body">
+                    <button style="width:200px" class="btn btn-primary" onclick="SapXepTheoTenSach()">Sắp xếp theo tên sách</button><br><br>
+                    <button style="width:200px" class="btn btn-primary" onclick="DanhSachHangTon()">Danh sách hàng tồn</button><br><br>
+                    <select id="txtMaChuDe" style="width:300px;height:35px" onchange="timSachTheoMaChuDe()">
+                        <option value="">Tất cả</option>
+                        <option value="1">Tiểu thuyết</option>
+                        <option value="2">Sách ngoại ngữ</option>
+                        <option value="3">Tâm lý thao túng</option>
+                        <option value="4">Kinh tế</option>
+                        <option value="5">Thiếu Nhi</option>
+                        <option value="6">ManGa</option>
+                    </select>
+
+
+                </div>
+            </div>
+</div>
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Mã sách
+            </th>
+            <th>
+                Tên sách
+            </th>
+            <th>
+                Giá bán
+            </th>
+            
+            <th>
+                Ảnh Bìa
+            </th>
+            <th>
+                Ngày Cập nhật
+            </th>
+            <th>
+                Số lượng Tồn
+            </th>
+            <th>
+                Mã nhà xuất bản
+            </th>
+            <th>
+                Mã chủ đề
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="displayProducts"> </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    ///////////Hiện danh sách///////////////////////
+    function showDanhSanPham() {
+        var str = '';
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:7086/api/SachAPi',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                $.each(data, function (key, val) {
+
+                    str += '<tr>';
+                    str += '<td>' + val.maSach + '</td>';
+                    str += '<td>' + val.tenSach + '</td>';
+                    str += '<td>' + val.giaBan + '</td>';
+                    str += '<td><img style="width:100px;height:100px" src="../../ProductImages/Images1/'+val.anhBia+'") alt="" /></td>';
+                    str += '<td>' + val.ngayCapNhat + '</td>';
+                    str += '<td>' + val.soLuongTon + '</td>';
+                    str += '<td>' + val.maNxb + '</td>';
+                    str += '<td>' + val.maChuDe + '</td>';
+                    str += '<td><button   class="btn btn-danger mb-1" onclick="xoaSanPham(' + val.maSach + ')">Delete</button></td>';
+                    str += '<td><button  class="btn btn-primary" onclick="DanhSachSanPham(' + val.maSach + ')">Edit</button></td>';
+                    str += '</tr>';
+
+                });
+                $('#displayProducts').html(str);
+            },
+            error: function (xhr) {
+                alert(xhr.responseText)
+            }
+        });
+    }
+    showDanhSanPham()
+    ///////////Tìm kiếm theo Id///////////////////////
+    function GetSanPham(id) {
+        var str = '';
+        var count = 0;
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:7086/api/SachAPi/' + id,
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                if (data.length == 0) { // Nếu không có kết quả nào
+                    str += '<tr><td colspan="7">Không tìm thấy thông tin sản phẩm</td></tr>';
+                } else {
+                    $.each(data, function (key, val) {
+                        if (count >= 1) { // Giới hạn số lượng phần tử hiển thị là 10
+                            return false; // Thoát khỏi vòng lặp
+                        }
+                        str += '<tr>';
+                        str += '<td>' + data.maSach + '</td>';
+                        str += '<td>' + data.tenSach + '</td>';
+                        str += '<td>' + data.giaBan + '</td>';
+                        str += '<td><img style="width:100px;height:100px" src="../../ProductImages/Images1/' + data.anhBia + '") alt="" /></td>';
+                        str += '<td>' + data.ngayCapNhat + '</td>';
+                        str += '<td>' + data.soLuongTon + '</td>';
+                        str += '<td>' + data.maNxb + '</td>';
+                        str += '<td>' + data.maChuDe + '</td>';
+                        str += '<td><button   class="btn btn-danger mb-1" onclick="xoaSanPham(' + val.maSach + ')">Delete</button></td>';
+                        str += '<td><button  class="btn btn-primary" onclick="DanhSachKhachHang(' + val.maKh + ')">Edit</button></td>';
+                        str += '</tr>';
+                        count++;
+                    });
+                }
+                $('#displayProducts').html(str);
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+    ///////Thêm Sản phẩm  //////////////////////
+            function themSanPham() {
+                /////////////
+                var maSach = $('#maSach').val();
+                var tenSach = $('#tenSach').val();
+                var giaBan = $('#giaBan').val();
+                var ngayCapNhat = $('#ngayCapNhat').val();
+                var soLuongTon = $('#soLuongTon').val();
+                var maNxb = $('#maNxb').val();
+                var maChuDe = $('#maChuDe').val();
+
+                // Lấy tên tệp ảnh từ input file
+                var anhBiaInput = $('#anhBia')[0];
+                var anhBiaFileName = anhBiaInput.value.split('\\').pop().split('/').pop();
+
+                // Kiểm tra và xóa đuôi "C:\fakepath\"
+                if (anhBiaFileName.includes("C:\\fakepath\\")) {
+                    anhBiaFileName = anhBiaFileName.replace("C:\\fakepath\\", "");
+                }
+
+                var SanPham = {
+                    maSach: maSach,
+                    tenSach: tenSach,
+                    giaBan: giaBan,
+                    ngayCapNhat: ngayCapNhat,
+                    anhBia: anhBiaFileName, // Gửi tên tệp đã được xử lý
+                    soLuongTon: soLuongTon,
+                    maNxb: maNxb,
+                    maChuDe: maChuDe
+                };
+
+                ////////////////
+                $.ajax({
+                    type: 'POST',
+                    url: 'https://localhost:7086/api/SachAPi',
+                    contentType: 'application/json',
+                    data: JSON.stringify(SanPham),
+                    success: function (data) {
+                        console.log(data);
+                        alert("Đã Thêm sản phẩm thành công!");
+                        showDanhSanPham();
+                    },
+                    error: function (xhr) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
+
+    ////////////Xóa 1 sản phẩm ///////////////
+    function xoaSanPham(id) {
+        $.ajax({
+            type: 'DELETE',
+            url: 'https://localhost:7086/api/SachAPi/' + id,
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                // Cập nhật lại danh sách khách hàng nếu cần thiết
+                alert("Đã xóa sản phẩm thành công!");
+                showDanhSanPham();
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+    /////////Xuất dữ liệu lên bảng nhập ///////////
+            function DanhSachSanPham(id) {
+                $.ajax({
+                    type: 'GET',
+                    url: 'https://localhost:7086/api/SachAPi/' + id,
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+
+                        // Đặt giá trị cho các trường thông tin
+                        $('#maSachs').val(data.maSach);
+                        $('#tenSachs').val(data.tenSach);
+                        $('#giaBans').val(data.giaBan);
+                        $('#ngayCapNhats').val(data.ngayCapNhat);
+                        $('#soLuongTons').val(data.soLuongTon);
+                        $('#maNxbs').val(data.maNxb);
+                        $('#maChuDes').val(data.maChuDe);
+
+                        // Hiển thị ảnh trước khi người dùng chọn file mới (nếu có)
+                        previewImage(data.anhBia);
+                    },
+                    error: function (xhr) {
+                        alert(xhr.responseText)
+                    }
+                });
+            }
+
+            // Hàm hiển thị ảnh trước khi người dùng chọn file mới
+
+    /////////Sửa Sản phẩm ///////////
+            function Suasanpham() {
+                var maSach = $('#maSachs').val();
+                var tenSach = $('#tenSachs').val();
+                var giaBan = $('#giaBans').val();
+                var anhBia = $('#anhBias').val();
+                var ngayCapNhat = $('#ngayCapNhats').val();
+                var soLuongTon = $('#soLuongTons').val();
+                var maNxb = $('#maNxbs').val();
+                var maChuDe = $('#maChuDes').val();
+
+                // Xóa đuôi "C:\fakepath\" nếu nó tồn tại trong tên tệp tin ảnh
+                if (anhBia.includes('C:\\fakepath\\')) {
+                    anhBia = anhBia.replace('C:\\fakepath\\', '');
+                }
+
+                var SanPham = {
+                    maSach: maSach,
+                    tenSach: tenSach,
+                    giaBan: giaBan,
+                    moTa: 'Sách hay',
+                    anhBia: anhBia,
+                    ngayCapNhat: ngayCapNhat,
+                    soLuongTon: soLuongTon,
+                    maNxb: maNxb,
+                    maChuDe: maChuDe,
+                    tenChuDe: 'Tiểu thuyết',
+                    maChuDeNavigation: null,
+                    maNxbNavigation: null
+                };
+
+                $.ajax({
+                    type: 'PUT',
+                    url: 'https://localhost:7086/api/SachAPi/' + maSach,
+                    contentType: 'application/json',
+                    data: JSON.stringify(SanPham),
+                    success: function (data) {
+                        console.log('Sửa thông tin sản phẩm thành công!');
+                        alert("Sửa sản phẩm thành công!");
+                        showDanhSanPham();
+                    },
+                    error: function (xhr) {
+                        console.log('Lỗi sửa thông tin sản phẩm: ' + xhr.responseText);
+                    }
+                });
+            }
+
+    //////////////////Tìm sản phẩm theo tên /////////////////////
+    function timSachTheoTen() {
+        var tenSach = $('#txtSearch').val();
+        var url = 'https://localhost:7086/api/SachAPi/Search/' + tenSach;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var str = '';
+                $.each(data, function (key, val) {
+                    str += '<tr>';
+                    str += '<td>' + val.maSach + '</td>';
+                    str += '<td>' + val.tenSach + '</td>';
+                    str += '<td>' + val.giaBan + '</td>';
+                    str += '<td><img style="width:100px;height:100px" src="../../ProductImages/Images1/' + val.anhBia + '") alt="" /></td>';
+                    str += '<td>' + val.ngayCapNhat + '</td>';
+                    str += '<td>' + val.soLuongTon + '</td>';
+                    str += '<td>' + val.maNxb + '</td>';
+                    str += '<td>' + val.maChuDe + '</td>';
+                    str += '<td><button   class="btn btn-danger mb-1" onclick="xoaSanPham(' + val.maSach + ')">Delete</button></td>';
+                    str += '<td><button  class="btn btn-primary" onclick="DanhSachSanPham(' + val.maSach + ')">Edit</button></td>';
+                    str += '</tr>';
+                });
+                $('#displayProducts').html(str);
+            },
+            error: function (xhr, status, error) {
+                // Xử lý lỗi (nếu có)
+                console.log(xhr.responseText);
+            }
+        });
+    }
+    //////////////Sắp xếp theo tên //////////////
+    function SapXepTheoTenSach() {
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:7086/api/SachAPI/SapXepTheoTenSach',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                var str = '';
+                $.each(data, function (key, val) {
+
+                    str += '<tr>';
+                    str += '<td>' + val.maSach + '</td>';
+                    str += '<td>' + val.tenSach + '</td>';
+                    str += '<td>' + val.giaBan + '</td>';
+                    str += '<td><img style="width:100px;height:100px" src="../../ProductImages/Images1/' + val.anhBia + '") alt="" /></td>';
+                    str += '<td>' + val.ngayCapNhat + '</td>';
+                    str += '<td>' + val.soLuongTon + '</td>';
+                    str += '<td>' + val.maNxb + '</td>';
+                    str += '<td>' + val.maChuDe + '</td>';
+                    str += '<td><button   class="btn btn-danger mb-1" onclick="xoaSanPham(' + val.maSach + ')">Delete</button></td>';
+                    str += '<td><button  class="btn btn-primary" onclick="DanhSachSanPham(' + val.maSach + ')">Edit</button></td>';
+                    str += '</tr>';
+
+                });
+                $('#displayProducts').html(str);
+            },
+            error: function (xhr) {
+                alert(xhr.responseText)
+            }
+        });
+    }
+    /////////Tìm sách theo mã chủ đề /////////////
+    function timSachTheoMaChuDe() {
+        var maChuDe = $('#txtMaChuDe').val();
+        var url = 'https://localhost:7086/api/SachAPI/SearchByMaChuDe/' + maChuDe;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var str = '';
+                $.each(data, function (key, val) {
+                    str += '<tr>';
+                    str += '<td>' + val.maSach + '</td>';
+                    str += '<td>' + val.tenSach + '</td>';
+                    str += '<td>' + val.giaBan + '</td>';
+                    str += '<td><img style="width:100px;height:100px" src="../../ProductImages/Images1/' + val.anhBia + '") alt="" /></td>';
+                    str += '<td>' + val.ngayCapNhat + '</td>';
+                    str += '<td>' + val.soLuongTon + '</td>';
+                    str += '<td>' + val.maNxb + '</td>';
+                    str += '<td>' + val.maChuDe + '</td>';
+                    str += '<td><button   class="btn btn-danger mb-1" onclick="xoaSanPham(' + val.maSach + ')">Delete</button></td>';
+                    str += '<td><button  class="btn btn-primary" onclick="DanhSachSanPham(' + val.maSach + ')">Edit</button></td>';
+                    str += '</tr>';
+                });
+                $('#displayProducts').html(str);
+            },
+            error: function (xhr, status, error) {
+                // Xử lý lỗi (nếu có)
+                console.log(xhr.responseText);
+            }
+        });
+    }
+    ///////////Hiện danh sách tồn kho///////////////////////
+    function DanhSachHangTon() {
+        var str = '';
+        $.ajax({
+            type: 'GET',
+                    url: 'https://localhost:7086/api/SachAPi/DanhSachHangTon',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                $.each(data, function (key, val) {
+
+                    str += '<tr>';
+                    str += '<td>' + val.maSach + '</td>';
+                    str += '<td>' + val.tenSach + '</td>';
+                    str += '<td>' + val.giaBan + '</td>';
+                    str += '<td><img style="width:100px;height:100px" src="../../ProductImages/Images1/'+val.anhBia+'") alt="" /></td>';
+                    str += '<td>' + val.ngayCapNhat + '</td>';
+                    str += '<td>' + val.soLuongTon + '</td>';
+                    str += '<td>' + val.maNxb + '</td>';
+                    str += '<td>' + val.maChuDe + '</td>';
+                    str += '<td><button   class="btn btn-danger mb-1" onclick="xoaSanPham(' + val.maSach + ')">Delete</button></td>';
+                    str += '<td><button  class="btn btn-primary" onclick="DanhSachSanPham(' + val.maSach + ')">Edit</button></td>';
+                    str += '</tr>';
+
+                });
+                $('#displayProducts').html(str);
+            },
+            error: function (xhr) {
+                alert(xhr.responseText)
+            }
+        });
+    }
+
+</script>
+
+<div id="book-info"></div>
+<h3>Sửa Sản phẩm</h3>
+        <h3>Sửa Sản phẩm</h3>
+        <form>
+            <input type="text" id="maSachs" value="" placeholder="Mã sách" readonly>
+            <input type="text" id="tenSachs" placeholder="Tên sách">
+            <input type="text" id="giaBans" placeholder="Giá Bán">
+            <input type="file" id="anhBias" name="anhBia" style="display: none;" onchange="previewImage(this);">
+            <img id="preview" style="max-width: 200px; max-height: 200px;">
+            <button type="button" onclick="document.getElementById('anhBias').click();">Chọn ảnh</button>
+            <input type="date" id="ngayCapNhats">
+            <input type="tel" id="soLuongTons" placeholder="Số lượng tồn">
+            <input type="tel" id="maNxbs" placeholder="Mã NXB">
+            <input type="tel" id="maChuDes" placeholder="Mã Chủ đề">
+            <button type="button" class="btn btn-primary" onclick="Suasanpham()">Lưu thông tin</button>
+        </form>
+<h3>Thêm sản phẩm </h3>
+        <form id="myForm" enctype="multipart/form-data">
+            <input type="text" id="tenSach" placeholder="tenSach">
+            <input type="email" id="giaBan" placeholder="giaBan">
+            <input type="date" id="ngayCapNhat">
+            <input type="file" id="anhBia" name="anhBia" style="display: none;" onchange="previewImage(this);">
+            <img id="preview" style="max-width: 200px; max-height: 200px;">
+            <button type="button" onclick="document.getElementById('anhBia').click();">Chọn ảnh</button>
+            <input type="text" id="soLuongTon" placeholder="soLuongTon">
+            <input type="text" id="maNxb" placeholder="maNxb">
+            <input type="text" id="maChuDe" placeholder="maChuDe">
+            <button type="button" class="btn btn-primary" onclick="themSanPham()">Thêm</button>
+        </form>
+
+        <script>
+            function previewImage(input) {
+                var fileInput = input;
+                var preview = document.getElementById('preview');
+
+                if (fileInput.files && fileInput.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        preview.src = e.target.result;
+                    }
+                    reader.readAsDataURL(fileInput.files[0]);
+
+                    // Lấy tên tệp ảnh mà không kèm theo đường dẫn đầy đủ
+                    var fileName = fileInput.value.split('\\').pop().split('/').pop();
+                    console.log(fileName);
+
+                }
+            }
+        </script>
+

@@ -1,0 +1,46 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model TestWeb.Models.NhaXuatBan
+
+@{
+    ViewData["Title"] = "ThemNxb";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+<hr />
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><strong>Thêm Nhà xuất bản </strong></div>
+            <div class="card-body card-block">
+        <form asp-action="ThemNxb">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="TenNxb" class="control-label"></label>
+                <input asp-for="TenNxb" class="form-control" />
+                <span asp-validation-for="TenNxb" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiaChi" class="control-label"></label>
+                <input asp-for="DiaChi" class="form-control" />
+                <span asp-validation-for="DiaChi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DienThoai" class="control-label"></label>
+                <input asp-for="DienThoai" class="form-control" />
+                <span asp-validation-for="DienThoai" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+    </div>
+</div>
+                    </div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

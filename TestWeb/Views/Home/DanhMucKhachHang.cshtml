@@ -1,0 +1,61 @@
+﻿@model TestWeb.Models.KhachHang
+
+@{
+    ViewData["Title"] = "DanhMucKhachHang";
+    Layout = "~/Views/Shared/_LayoutBookStore.cshtml";
+}
+
+<h3>Tài khoản cá nhân</h3>
+
+<div>
+    
+    <hr />
+    <dl class="row" style="font-size:20px">
+        <dt class = "col-sm-2">
+           Tài khoản
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TaiKhoan)
+        </dd>
+        <dt class = "col-sm-2">
+            Mật khẩu
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MatKhau)
+        </dd>
+        <dt class = "col-sm-2">
+           Email
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class = "col-sm-2">
+            Địa chỉ
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DiaChi)
+        </dd>
+        <dt class = "col-sm-2">
+           Điện thoại
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DienThoai)
+        </dd>
+        <dt class = "col-sm-2">
+            Giới tính
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GioiTinh)
+        </dd>
+        <dt class = "col-sm-2">
+            Ngày sinh
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NgaySinh)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a class="btn btn-primary" asp-action="SuaKhachHang" asp-controller="Home" asp-route-id="@Model.MaKh">Sửa thông tin</a> 
+    <a class="btn btn-primary" asp-action="Index">Quay lại </a>
+</div>

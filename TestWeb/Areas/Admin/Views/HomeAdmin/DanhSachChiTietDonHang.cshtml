@@ -1,0 +1,66 @@
+﻿@using TestWeb.Areas.Admin.Models;
+@using X.PagedList.Mvc.Core;
+@model X.PagedList.IPagedList<ChiTietDonHangViewModel>
+
+@{
+    ViewData["Title"] = "DanhSachChiTietDonHang";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<h3>Chi tiết đơn hàng</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Mã đơn hàng
+            </th>
+            <th>
+                Tên sách
+            </th>
+            <th>
+                Ảnh bìa
+            </th>
+            <th>
+                Số lượng sách
+            </th>
+            <th>
+                Đơn Giá
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaDonHang1)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TenSach1)
+                </td>
+                <td>
+                    <img src=@Url.Content("../../ProductImages/Images1/"+ @item.img1) alt="" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SoLuong1)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GiaBan1)
+                </td>
+                <td>
+                    <a class="btn btn-primary" role="button" asp-action="SuaDonHang" asp-route-maSanPham="@item.MaDonHang1" asp-route-maSach="@item.MaSach1">Duyệt đơn</a>
+                    <a type="button" class="btn btn-danger mb-1" asp-action="XoaDonHang" asp-route-maSanPham="@item.MaDonHang1" asp-route-maSach="@item.MaSach1">Hủy đơn hàng</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+@Html.PagedListPager(Model,page=>Url.Action("DanhSachChiTietDonHang",new {page=page} ),new
+X.PagedList.Web.Common.PagedListRenderOptions(){
+    LiElementClasses=new List<String> {"page-item"},
+    PageClasses = new List<String> {"page-link"}
+})

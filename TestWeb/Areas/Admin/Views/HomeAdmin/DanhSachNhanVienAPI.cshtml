@@ -1,0 +1,268 @@
+﻿@using TestWeb.Models;
+@using X.PagedList.Mvc.Core;
+@model IEnumerable<TestWeb.Models.NhanVien>
+
+@{
+    ViewData["Title"] = "DanhSachNhanVienAPI";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<h2>Danh sách nahan viên </h2>
+
+<input type="text" id="searchID" name="searchID" placeholder="Tìm kiếm theo ID" style="width:400px" />
+<button class="btn btn-primary" onclick="getNhanVien($('#searchID').val())" style="width:100px">Tìm kiếm</button>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Mã nhân viên
+            </th>
+            <th>
+                UserName
+            </th>
+            <th>
+                Tên nhân viên
+            </th>
+            <th>
+                Ngày Sinh
+            </th>
+            <th>
+                Số điện thoại
+            </th>
+            <th>
+                Địa chỉ
+            </th>
+            <th>
+                Chức vụ
+            </th>
+            <th>
+                Ảnh đại diện
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="displayProducts"> </tbody>
+</table>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    ////////////Danh sách nhân viên //////////////
+    function showDanhSachNhanVien() {
+        var str = '';
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:7086/api/nhanvienapi',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                $.each(data, function (key, val) {
+
+                    str += '<tr>';
+                    str += '<td>' + val.maNhanVien + '</td>';
+                    str += '<td>' + val.username + '</td>';
+                    str += '<td>' + val.tenNhanVien + '</td>';
+                    str += '<td>' + val.ngaySinh + '</td>';
+                    str += '<td>' + val.soDienThoai + '</td>';
+                    str += '<td>' + val.diaChi + '</td>';
+                    str += '<td>' + val.chucVu + '</td>';
+                    str += '<td><img style="width:100px;height:100px" src=@Url.Content("../../ProductImages/Images1/accountImg.png") alt="" /></td>';
+                    str += '<td><button   class="btn btn-danger mb-1" onclick="xoaNhanVien(' + val.maNhanVien + ')">Delete</button></td>';
+                    str += '<td><button  class="btn btn-primary" onclick="DanhSachNhanVien(' + val.maNhanVien + ')">Edit</button></td>';
+                    str += '</tr>';
+
+                });
+                $('#displayProducts').html(str);
+            },
+            error: function (xhr) {
+                alert(xhr.responseText)
+            }
+        });
+    }
+    showDanhSachNhanVien()
+    /////////////Tìm nhân viên theo id ///////////////////
+    function getNhanVien(id) {
+        var str = '';
+        var count = 0;
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:7086/api/nhanvienapi/' + id,
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                if (data.length == 0) { // Nếu không có kết quả nào
+                    str += '<tr><td colspan="7">Không tìm thấy thông tin khách hàng</td></tr>';
+                } else {
+                    $.each(data, function (key, val) {
+                        if (count >= 1) { // Giới hạn số lượng phần tử hiển thị là 10
+                            return false; // Thoát khỏi vòng lặp
+                        }
+                        str += '<tr>';
+                        str += '<td>' + data.maNhanVien + '</td>';
+                        str += '<td>' + data.username + '</td>';
+                        str += '<td>' + data.tenNhanVien + '</td>';
+                        str += '<td>' + data.ngaySinh + '</td>';
+                        str += '<td>' + data.soDienThoai + '</td>';
+                        str += '<td>' + data.diaChi + '</td>';
+                        str += '<td>' + data.chucVu + '</td>';
+                        str += '<td><img style="width:100px;height:100px" src=@Url.Content("../../ProductImages/Images1/accountImg.png") alt="" /></td>';
+                        str += '<td><button   class="btn btn-danger mb-1" onclick="xoaNhanVien(' + val.maNhanVien + ')">Delete</button></td>';
+                        str += '<td><button  class="btn btn-primary" onclick="DanhSachNhanVien(' + val.maNhanVien + ')">Edit</button></td>';
+                        str += '</tr>';
+                        count++;
+                    });
+                }
+                $('#displayProducts').html(str);
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+    ///////Thêm Nhân Viên  //////////////////////
+    function themNhanVien() {
+      /////////////
+        var maNhanVien = $('#maNhanVien').val();
+        var username = $('#username').val();
+        var tenNhanVien = $('#tenNhanVien').val();
+        var ngaySinh = $('#ngaySinh').val();
+        var soDienThoai = $('#soDienThoai').val();
+        var diaChi = $('#diaChi').val();
+        var chucVu = $('#chucVu').val();
+        var anhDaiDien = 'accountImg.png';
+        
+
+      ////////////////////
+        var NhanVien = {
+            maNhanVien: maNhanVien,
+            username: username,
+            tenNhanVien: tenNhanVien,
+            ngaySinh: ngaySinh,
+            soDienThoai: soDienThoai,
+            diaChi: diaChi,
+            chucVu: chucVu,
+            anhDaiDien:anhDaiDien
+            
+        };
+
+       ////////////////
+        $.ajax({
+            type: 'POST',
+            url: 'https://localhost:7086/api/nhanvienapi',
+            contentType: 'application/json',
+            data: JSON.stringify(NhanVien),
+            success: function (data) {
+                console.log(data);
+               
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    ////////////Xóa 1 nhân viên ///////////////
+    function xoaNhanVien(id) {
+        $.ajax({
+            type: 'DELETE',
+            url: 'https://localhost:7086/api/nhanvienapi/' + id,
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                // Cập nhật lại danh sách khách hàng nếu cần thiết
+                alert("Đã xóa nhân viên thành công!");
+                showDanhSachNhanVien();
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+    /////////Xuất dữ liệu lên bảng nhập ///////////
+    function DanhSachNhanVien(id) {
+        var str = '';
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:7086/api/nhanvienapi/' + id,
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                $.each(data, function (key, val) {
+                    $('#maNhanViens').val(data.maNhanVien);
+                    $('#usernames').val(data.username);
+                    $('#tenNhanViens').val(data.tenNhanVien);
+                    $('#ngaySinhs').val(data.ngaySinh);
+                    $('#soDienThoais').val(data.soDienThoai);
+                    $('#diaChis').val(data.diaChi);
+                    $('#chucVus').val(data.chucVu);
+                    
+                    
+
+                });
+
+            },
+            error: function (xhr) {
+                alert(xhr.responseText)
+            }
+        });
+    }
+    ///////////Sửa Nhân Viên////////////////////
+    function SuaNhanVien() {
+        var maNhanVien = $('#maNhanViens').val();
+        var username = $('#usernames').val();
+        var tenNhanVien = $('#tenNhanViens').val();
+        var ngaySinh = $('#ngaySinhs').val();
+        var soDienThoai = $('#soDienThoais').val();
+        var diaChi = $('#diaChis').val();
+        var chucVu = $('#chucVus').val();
+        var anhDaiDien = 'accountImg.png';
+
+        var NhanVien = {
+            maNhanVien: maNhanVien,
+            username: username,
+            tenNhanVien: tenNhanVien,
+            ngaySinh: ngaySinh,
+            soDienThoai: soDienThoai,
+            diaChi: diaChi,
+            chucVu: chucVu,
+            anhDaiDien: anhDaiDien
+
+        };
+
+        $.ajax({
+            type: 'PUT',
+            url: 'https://localhost:7086/api/nhanvienapi/' + maNhanVien,
+            contentType: 'application/json',
+            data: JSON.stringify(NhanVien),
+            success: function (data) {
+                console.log('Sửa thông tin Nhân viên thành công!');
+            },
+            error: function (xhr) {
+                console.log('Lỗi sửa thông tin Nhân viên: ' + xhr.responseText);
+            }
+        });
+    }
+
+</script>
+<h3>Sửa nhân viên</h3>
+<form>
+
+    <input type="text" id="maNhanViens" value="" placeholder="Mã khách hàng">
+    <input type="text" id="usernames" placeholder="Tài khoản">
+    <input type="text" id="tenNhanViens" placeholder="Mật khẩu">
+    <input type="date" id="ngaySinhs">
+    <input type="text" id="soDienThoais" placeholder="Địa chỉ">
+    <input type="tel" id="diaChis" placeholder="Điện thoại">
+    <input type="tel" id="chucVus" placeholder="Điện thoại">
+
+    <button type="button" class="btn btn-primary" onclick="SuaNhanVien()">Lưu thông tin</button>
+</form>
+<h3>Thêm Nhân viên </h3>
+<form>
+    <input type="text" id="maNhanVien" placeholder="Mã nhân viên">
+    <input type="text" id="username" placeholder="UserName">
+    <input type="email" id="tenNhanVien" placeholder="Tên nhân viên">
+    <input type="date" id="ngaySinh">
+    <input type="tel" id="soDienThoai" placeholder="Điện thoại">
+    <input type="text" id="diaChi" placeholder="Địa chỉ">
+    <input type="text" id="chucVu" placeholder="Chức vụ">
+    <button type="button" class="btn btn-primary" onclick="themNhanVien()">Thêm</button>
+
+</form>

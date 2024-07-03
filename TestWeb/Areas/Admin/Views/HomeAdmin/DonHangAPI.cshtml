@@ -1,0 +1,74 @@
+﻿@model IEnumerable<TestWeb.Models.DonHang>
+
+@{
+    ViewData["Title"] = "DonHangAPI";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>DonHangAPI</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Mã đơn hàng
+            </th>
+            <th>
+                Đã thanh toán
+            </th>
+            <th>
+                Tình trạng giao hàng
+            </th>
+            <th>
+                Ngày đặt
+            </th>
+            <th>
+                Ngày giao
+            </th>
+            <th>
+                Mã khách hàng
+            </th>
+            <th>
+                Mã nhân viên
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="displayProducts"> </tbody>
+</table>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    ///////////Hiện danh sách///////////////////////
+    function showDanhDonHang() {
+        var str = '';
+        $.ajax({
+            type: 'GET',
+            url: 'https://localhost:7086/api/DonHangAPI',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data); // In ra data trong console của trình duyệt
+                $.each(data, function (key, val) {
+
+                    str += '<tr>';
+                    str += '<td>' + val.maDonHang + '</td>';
+                    str += '<td>' + val.daThanhToan + '</td>';
+                    str += '<td>' + val.tinhTrangGiaoHang + '</td>';
+                    str += '<td>' + val.ngayDat + '</td>';
+                    str += '<td>' + val.ngayGiao + '</td>';
+                    str += '<td>' + val.maKh + '</td>';
+                    str += '<td>' + val.maNhanVien + '</td>';
+                    str += '<td><button   class="btn btn-danger mb-1" onclick="xoaSanPham(' + val.maSach + ')">Delete</button></td>';
+                    str += '<td><button  class="btn btn-primary" onclick="DanhSachSanPham(' + val.maSach + ')">Edit</button></td>';
+                    str += '</tr>';
+
+                });
+                $('#displayProducts').html(str);
+            },
+            error: function (xhr) {
+                alert(xhr.responseText)
+            }
+        });
+    }
+    showDanhDonHang()
+</script>

@@ -1,0 +1,35 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model TestWeb.Models.ChuDe
+
+@{
+    ViewData["Title"] = "ThemChuDeMoi";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h3>Thêm chủ đề mới</h3>
+
+<hr />
+<div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header"><strong>Thêm Chủ đề </strong></div>
+                <div class="card-body card-block">
+        <form method="post" asp-action="ThemChuDeMoi">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="TenChuDe" class="control-label"></label>
+                        <input type="text" id="company" class="form-control" asp-for="TenChuDe" class="form-control" />
+                <span asp-validation-for="TenChuDe" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+    </div>
+</div>
+
+
+
+

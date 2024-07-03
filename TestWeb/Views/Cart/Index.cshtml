@@ -1,0 +1,82 @@
+﻿@using TestWeb.Models.Home;
+
+@model IEnumerable<CartItem>
+@{
+	ViewData["Title"] = "Index";
+	Layout = "~/Views/Shared/_LayoutCart.cshtml";
+}
+<section id="cart_items">
+	<div class="container">
+		<div class="breadcrumbs">
+			<ol class="breadcrumb">
+				<li><a asp-controller="Home" asp-action="Index">Trang Chính</a></li>
+				<li class="active">Đặt Hàng</li>
+			</ol>
+		</div>
+		<div class="table-responsive cart_info">
+			<table class="table table-condensed">
+				<thead>
+					<tr class="cart_menu">
+						<td class="image">Sách</td>
+						<td class="description">Tên sách</td>
+						<td class="price">Giá</td>
+						<td class="quantity">Số Lượng</td>
+						<td class="total">Tổng giá</td>
+						<td></td>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model)
+					{
+						<tr>
+							<td class="cart_product">
+								<a href=""><img src="../ProductImages/Images/@item.Image" width="110" height="110" alt=""></a>
+							</td>
+							<td class="cart_description">
+								<h4><a href="">@item.ProductName</a></h4>
+								<p>Web ID:@item.ProductId</p>
+							</td>
+							<td class="cart_price">
+								<p>@item.Price</p>
+							</td>
+							<td class="cart_quantity">
+								@*<div class="cart_quantity_button">
+							<a id="btnplus" class="cart_quantity_up" href=""> + </a>*@
+								<form asp-action="AdjustQuantity" asp-route-id="@item.ProductId" method="post">
+									<input class="cart_quantity_input" asp-for="@item.Quantity" min="0" max="1000" type="number" name="quantity" autocomplete="off" size="2">
+								</form>
+								@*<a id="btn minus" class="cart_quantity_down" href=""> - </a>
+							</div>*@
+							</td>
+							<td class="cart_total">
+								<p class="cart_total_price">@item.Total</p>
+							</td>
+							<td class="cart_delete">
+								<a class="cart_quantity_delete" href="/Cart/delete/@item.ProductId"><i class="fa fa-times"></i></a>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</section> <!--/#cart_items-->
+
+<section id="do_action">
+	<div class="container">
+		
+		<div class="row">
+			
+			<div class="col-sm-6">
+				<div class="total_area">
+					<ul>
+						<li>Tổng đơn hàng  <span>@Model.Sum(c=>c.Price*c.Quantity)</span></li>
+					</ul>
+					
+					<a asp-controller="Cart" asp-action="ThemDonHang"  class="btn btn-default check_out">Đặt Hàng</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</section><!--/#do_action-->
+<script src="~/js/site.js"></script>

@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewData["Title"] = "Search";
+    Layout = "~/Views/Shared/_LayoutBookStore.cshtml";
+}
+
+@model IEnumerable<Sach>
+@foreach (var item in Model)
+{
+	<div class="col-sm-4">
+		<div class="product-image-wrapper">
+			<div class="single-products">
+				<div class="productinfo text-center">
+					<a asp-controller="Home" asp-action="ChiTietSanPham" asp-route-masach="@item.MaSach"><img src=@Url.Content("../ProductImages/Images1/"+item.AnhBia) alt="" /></a>
+					<h2>@item.GiaBan VND</h2>
+					<p>@item.TenSach</p>
+					<a asp-action="AddToCart" asp-controller="Cart" asp-route-id="@item.MaSach" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+				</div>
+			</div>
+			<div class="choose">
+				<ul class="nav nav-pills nav-justified">
+					<li><a href="#"><i class="fa fa-plus-square"></i>Add to wishlist</a></li>
+					<li><a href="#"><i class="fa fa-plus-square"></i>Add to compare</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+}

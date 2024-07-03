@@ -1,0 +1,473 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>Checkout | E-Shopper</title>
+	<link href="../1LayoutBookStore/css/bootstrap.min.css" rel="stylesheet">
+	<link href="../1LayoutBookStore/css/font-awesome.min.css" rel="stylesheet">
+	<link href="../1LayoutBookStore/css/prettyPhoto.css" rel="stylesheet">
+	<link href="../1LayoutBookStore/css/price-range.css" rel="stylesheet">
+	<link href="../1LayoutBookStore/css/animate.css" rel="stylesheet">
+	<link href="../1LayoutBookStore/css/main.css" rel="stylesheet">
+	<link href="../1LayoutBookStore/css/responsive.css" rel="stylesheet">
+	<!--[if lt IE 9]>
+	<script src="../1LayoutBookStore/js/html5shiv.js"></script>
+	<script src="../1LayoutBookStore/js/respond.min.js"></script>
+	<![endif]-->
+	<link rel="shortcut icon" href="../1LayoutBookStore/images/ico/favicon.ico">
+	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../1LayoutBookStore/images/ico/apple-touch-icon-144-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="../1LayoutBookStore/images/ico/apple-touch-icon-114-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="../1LayoutBookStore/images/ico/apple-touch-icon-72-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" href="../1LayoutBookStore/images/ico/apple-touch-icon-57-precomposed.png">
+	<style>
+		.badge {
+			padding-left: 9px;
+			padding-right: 9px;
+			-webkit-border-radius: 9px;
+			-moz-border-radius: 9px;
+			border-radius: 9px;
+		}
+
+		.label-warning[href],
+		.badge-warning[href] {
+			background-color: #c67605;
+		}
+
+		#lblCartCount {
+			font-size: 12px;
+			background: #ff0000;
+			color: #fff;
+			padding: 0 5px;
+			vertical-align: top;
+			margin-left: -10px;
+		}
+	</style>
+</head><!--/head-->
+
+<body>
+	@RenderBody()
+	<header id="header"><!--header-->
+		
+		
+		<div class="header-middle"><!--header-middle-->
+			<div class="container">
+				<div class="row">
+					<div class="col-md-4 clearfix">
+						<div class="logo pull-left">
+							<a asp-action="Index" asp-controller="Home"><img src="../Product../1LayoutBookStore/images/Images1/iconBook.png" alt="" />  <h7><span >E</span>-BOOKS</h7></a>
+						</div>
+						<div class="btn-group pull-right clearfix">
+							
+						</div>
+					</div>
+					
+					<div class="col-md-8 clearfix">
+						<div class="shop-menu clearfix pull-right">
+							<ul class="nav navbar-nav">
+								@{
+									var gmailClient = new TestWeb.Models.GmailClient.GmailClient();
+									var kh = gmailClient.getEmail();
+									var Ten = gmailClient.getName();
+									var sosach = gmailClient.getSoSach();
+									
+								}
+								@{
+									if (Ten == null)
+									{
+										<li><a asp-action="Login" asp-controller="LoginClient"><i class="fa fa-user"></i> Tài khoản</a></li>
+									}
+									else
+									{
+										<li><a asp-action="DanhMucKhachHang" asp-controller="Home"><i class="fa fa-user"></i> @Ten.ToString()</a></li>
+									}
+								
+								//<li><a href=""><i class="fa fa-user"></i> Account</a></li>
+								}
+								<li><a  asp-action="Index" asp-controller="Cart"><i class="fa fa-shopping-cart"></i> Giỏ Hàng</a>
+									@{
+										if (sosach == 0)
+										{
+										
+										}
+										else
+										{
+											<span class='badge badge-warning' id='lblCartCount'> @sosach</span>
+										}
+									//<span class='badge badge-warning' id='lblCartCount'> 5 </span>
+									}
+								</li>
+								
+								
+								@{
+									if (kh == null)
+									{
+										<li>@Html.ActionLink("Đăng Ký", "Register", "LoginClient")</li>
+										<li>@Html.ActionLink("Đăng nhập", "Login", "LoginClient")</li>
+									}
+									else
+									{
+										<li>@Html.ActionLink("Đăng Xuất", "Logout", "LoginClient")</li>
+									}
+								}
+
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div><!--/header-middle-->
+	
+		<div class="header-bottom"><!--header-bottom-->
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-9">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+						</div>
+						<div class="mainmenu pull-left">
+							<ul class="nav navbar-nav collapse navbar-collapse">
+								<li><a asp-action="Index" asp-controller="Home" class="active">Trang Chính</a></li>
+								
+							</ul>
+						</div>
+					</div>
+					<div class="col-sm-3">
+						<div class="search_box pull-right">
+							<form method="get" asp-action="Search" >
+								<input type="text" name="searchString" placeholder="Tên Sách"/>
+								<button type="submit">Tìm kiếm</button>
+							</form>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div><!--/header-bottom-->
+	</header><!--/header-->
+
+	<section id="cart_items">
+		<div class="container">
+			<div class="breadcrumbs">
+				<ol class="breadcrumb">
+					<li><a href="#">Home</a></li>
+					<li class="active">Check out</li>
+				</ol>
+			</div><!--/breadcrums-->
+
+			
+			
+
+			<div class="register-req">
+				<p>Vui lòng sử dụng Đăng ký và Thanh toán để dễ dàng truy cập vào lịch sử đặt hàng của bạn hoặc sử dụng Thanh toán với tư cách Khách</p>
+			</div><!--/register-req-->
+
+			<div class="shopper-informations">
+				<div class="row">
+					<div class="col-sm-3">
+						<div class="shopper-info">
+							<p>Thông tin người mua hàng</p>
+							<form>
+								<input type="text" placeholder="Tên người dùng">
+								<input type="text" placeholder="Tài khoản">
+								<input type="password" placeholder="Mật khẩu">
+								<input type="password" placeholder="Mật khẩu">
+							</form>
+							<a class="btn btn-primary" href="">Get Quotes</a>
+							<a class="btn btn-primary" href="">Continue</a>
+						</div>
+					</div>
+					<div class="col-sm-5 clearfix">
+						<div class="bill-to">
+							<p>Thông tin liên hệ</p>
+							<div class="form-one">
+								<form>
+									<input type="text" placeholder="Tên">
+									<input type="text" placeholder="Email">					
+									<input type="text" placeholder="Họ tên">
+									<input type="text" placeholder="Tên">
+									<input type="text" placeholder="Thẻ ngân hàng">
+									<input type="text" placeholder="Ví MoMo">
+								</form>
+							</div>
+							<div class="form-two">
+								<form>
+									<input type="text" placeholder="Zip / Code *">
+									<select>
+										<option>-- Tỉnh--</option>
+										<option>Hà nội</option>
+										<option>Bangladesh</option>
+										<option>UK</option>
+										<option>India</option>
+										<option>Pakistan</option>
+										<option>Ucrane</option>
+										<option>Canada</option>
+										<option>Dubai</option>
+									</select>
+									<select>
+										<option>-- Thành phố --</option>
+										<option>United States</option>
+										<option>Bangladesh</option>
+										<option>UK</option>
+										<option>India</option>
+										<option>Pakistan</option>
+										<option>Ucrane</option>
+										<option>Canada</option>
+										<option>Dubai</option>
+									</select>
+									<input type="password" placeholder="Mật khẩu">
+									<input type="text" placeholder="Số điện thoại">
+									<input type="text" placeholder="Email">
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="order-message">
+							<p>Thông tin ghi chú</p>
+							<textarea name="message" placeholder="Ghi chú về đơn đặt hàng của bạn, Ghi chú đặc biệt khi giao hàng" rows="16"></textarea>
+							<label><input type="checkbox"> Vận chuyển đến địa chỉ hóa đơn</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+
+			
+			<div class="payment-options">
+				<span>
+					<label style="font-size:20px"><input type="checkbox"> VietComBank</label>
+				</span>
+				<span>
+					<label style="font-size:20px"><input type="checkbox"> momo</label>
+				</span>
+				<span>
+					<label style="font-size:20px"><input type="checkbox"> Paypal</label>
+				</span>
+			</div>
+		</div>
+	</section> <!--/#cart_items-->
+
+
+
+	<footer id="footer"><!--Footer-->
+		<div class="footer-top">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-2">
+						<div class="companyinfo">
+							<h2><span>e</span>-BOOK</h2>
+							<h5>Các nhà phát triển</h5>
+						</div>
+					</div>
+					<div class="col-sm-7">
+						<div class="col-sm-3">
+							<div class="video-gallery text-center">
+								<a href="#">
+									<div class="iframe-img">
+										<img src="../1LayoutbookStore/../1LayoutBookStore/images/home/iframe1.png" alt="" />
+									</div>
+									<div class="overlay-icon">
+										<i class="fa fa-play-circle-o"></i>
+									</div>
+								</a>
+								<p>Circle of Hands</p>
+								<h2>24 DEC 2014</h2>
+							</div>
+						</div>
+
+						<div class="col-sm-3">
+							<div class="video-gallery text-center">
+								<a href="#">
+									<div class="iframe-img">
+										<img src="../1LayoutbookStore/../1LayoutBookStore/images/home/iframe2.png" alt="" />
+									</div>
+									<div class="overlay-icon">
+										<i class="fa fa-play-circle-o"></i>
+									</div>
+								</a>
+								<p>Circle of Hands</p>
+								<h2>24 DEC 2014</h2>
+							</div>
+						</div>
+
+						<div class="col-sm-3">
+							<div class="video-gallery text-center">
+								<a href="#">
+									<div class="iframe-img">
+										<img src="../1LayoutbookStore/../1LayoutBookStore/images/home/iframe3.png" alt="" />
+									</div>
+									<div class="overlay-icon">
+										<i class="fa fa-play-circle-o"></i>
+									</div>
+								</a>
+								<p>Circle of Hands</p>
+								<h2>24 DEC 2014</h2>
+							</div>
+						</div>
+
+						<div class="col-sm-3">
+							<div class="video-gallery text-center">
+								<a href="#">
+									<div class="iframe-img">
+										<img src="../1LayoutbookStore/../1LayoutBookStore/images/home/iframe4.png" alt="" />
+									</div>
+									<div class="overlay-icon">
+										<i class="fa fa-play-circle-o"></i>
+									</div>
+								</a>
+								<p>Circle of Hands</p>
+								<h2>24 DEC 2014</h2>
+							</div>
+						</div>
+					</div>
+					@*<div class="col-sm-3">*@
+				@*	<script src='https://api.mapbox.com/mapbox-gl-../1LayoutBookStore/js/v2.13.0/mapbox-gl.js'></script>
+					<link href='https://api.mapbox.com/mapbox-gl-../1LayoutBookStore/js/v2.13.0/mapbox-gl.css' rel='stylesheet' />
+					<div id="map" style='width:350px;height:300px'></div>
+					<script src="https://api.mapbox.com/mapbox-gl-../1LayoutBookStore/js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js">
+					</script>
+					<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-../1LayoutBookStore/js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.css" type="text/css" />
+					<script>
+						mapboxgl.accessToken = 'pk.eyJ1Ijoibmd1eWVuYmluaGFuMTIzIiwiYSI6ImNsZmw0dWdiODAxb3czcm11eWd2YmVhNWwifQ.bGLy5uZSIxyLN8SC1cOfZg';
+						var map = new mapboxgl.Map({
+							container: 'map',
+							style: 'mapbox://styles/mapbox/streets-v11',
+							center: [105.8250385, 20.9647483], //Tọa độ lãnh thổ Việt Nam
+							zoom: 15,
+							language: 'vi',
+						});
+					</script>
+					<script>
+						var marker = new mapboxgl.Marker({
+							color: "red", //Màu của Marker là đỏ
+							draggable: true,
+							anchor: 'bottom', //Nhãn Hà Nội nằm dưới Marker
+						}).setLngLat([105.8250385, 20.9647483]) //Thiết lập Marker tại hà Nội
+							.addTo(map);
+					</script>
+					<script>
+						//Thêm popup
+						var popup = new mapboxgl.Popup({
+							closeButton: true,
+							closeOnClick: false,
+							anchor: 'right',
+						}).setLngLat([105.8250385, 20.9647483])
+							.setHTML("<h3>HH2A Linh Đàm</h3>")
+							.addTo(map);
+					</script>
+					<script>
+						// Thêm control Phóng to/thu nhỏ
+						map.addControl(new mapboxgl.NavigationControl({
+							showCompass: true,
+							showZoom: true,
+
+						}));
+					</script>
+					<script>
+						// Thêm Control - Toàn màn hình của bản đồ
+						map.addControl(new mapboxgl.FullscreenControl());
+					</script>
+					<script>
+						map.addControl(new mapboxgl.GeolocateControl({
+							positionOption: {
+								enableHightAccuracy: true
+							},
+							trackUserLocation: true
+						}));
+					</script>
+					<script>
+						map.addControl(
+							new MapboxDirections({
+								accessToken: mapboxgl.accessToken
+							}),
+							'top-left'
+						);
+					</script>*@
+				</div>
+			</div>
+		</div>
+
+		<div class="footer-widget">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-2">
+						<div class="single-widget">
+							<h2 style="font-weight:bold">DỊCH VỤ</h2>
+							<ul class="nav nav-pills nav-stacked">
+								<li><a href="#">Điều khoản sử dụng</a></li>
+								<li><a href="#">Chính sách bảo mật thông tin cá nhân</a></li>
+								<li><a href="#">Chính sách bảo mật thanh toán</a></li>
+								<li><a href="#">Giới thiệu Fahasa</a></li>
+								<li><a href="#">Hệ thống trung tâm - nhà sách</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-sm-2">
+						<div class="single-widget">
+							<h2 style="font-weight:bold">TÀI KHOẢN CỦA TÔI</h2>
+							<ul class="nav nav-pills nav-stacked">
+								<li><a href="#">Điều khoản sử dụng</a></li>
+								<li><a href="#">Đăng nhập/Tạo mới tài khoản</a></li>
+								<li><a href="#">Thay đổi địa chỉ khách hàng</a></li>
+								<li><a href="#">Chi tiết tài khoản</a></li>
+								<li><a href="#">Lịch sử mua hàng</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-sm-2">
+						<div class="single-widget">
+							<h2 style="font-weight:bold">HỖ TRỢ</h2>
+							<ul class="nav nav-pills nav-stacked">
+								<li><a href="#">Chính sách đổi - trả - hoàn tiền</a></li>
+								<li><a href="#">Chính sách bảo hành - bồi hoàn</a></li>
+								<li><a href="#">Chính sách vận chuyển</a></li>
+								<li><a href="#">Chính sách khách sỉ</a></li>
+								<li><a href="#">Phương thức thanh toán và xuất HĐ</a></li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="col-sm-3 col-sm-offset-1">
+						<div class="single-widget">
+							<h2>Đăng kí ủng hộ shop</h2>
+							<form action="#" class="searchform">
+								<input type="text" placeholder="Email đăng kí" />
+								<button type="submit" class="btn btn-default"><i class="fa fa-arrow-circle-o-right"></i></button>
+								<p>Nhận các bản cập nhật mới nhất từ <br />trang web của chúng tôi và được cập nhật lợi ích của bạn ...</p>
+							</form>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<div class="footer-bottom">
+			<div class="container">
+				<div class="row">
+					<p class="pull-left">Copyright © 2013 E-BOOK Inc. All rights reserved.</p>
+					<p class="pull-right">Designed by <span><a target="_blank" href="http://www.themeum.com">Themeum</a></span></p>
+				</div>
+			</div>
+		</div>
+
+	</footer><!--/Footer-->
+
+
+
+	<script src="../1LayoutBookStore/js/jquery.js"></script>
+	<script src="../1LayoutBookStore/js/bootstrap.min.js"></script>
+	<script src="../1LayoutBookStore/js/jquery.scrollUp.min.js"></script>
+	<script src="../1LayoutBookStore/js/jquery.prettyPhoto.js"></script>
+	<script src="../1LayoutBookStore/js/main.js"></script>
+</body>
+</html>
